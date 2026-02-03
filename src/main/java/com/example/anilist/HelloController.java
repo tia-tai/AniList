@@ -11,38 +11,26 @@ import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 
 public class HelloController {
-    @FXML
-    private Label welcomeText;
-
-    @FXML
-    protected void onHelloButtonClick() {
-        welcomeText.setText("Welcome to JavaFX Application!");
-    }
 
     public void initialize() throws Exception {
-        String yourAPIurl = "https://api.jikan.moe/v4/random/anime";
-        String yourAPIkey = "";
-        URL APIurl = new URL(yourAPIurl);
-        HttpURLConnection APIconnection = (HttpURLConnection) APIurl.openConnection();
-        APIconnection.setRequestMethod("GET");
-        APIconnection.setRequestProperty("Accept", "application/json");
-        if (yourAPIkey != null) {
-            APIconnection.setRequestProperty("Authorization", yourAPIkey);
-        }
-        InputStreamReader APIinStream = new InputStreamReader(APIconnection.getInputStream());
-        BufferedReader APIreader = new BufferedReader(APIinStream);
-        StringBuilder JSONstring = new StringBuilder();
-        String line;
-        while ((line = APIreader.readLine()) != null) {
-            JSONstring.append(line);
-        }
-        APIreader.close();
-        System.out.println(JSONstring);
-        // JSONString has already been read from URL
-        // read 1 JSON object ("key":"value" pairs) into fields of MODEL object
+        String jsonAnime=Anime.getJSONfromURL("https://api.jikan.moe/v4/random/anime");
+        System.out.println("JSONs: " + jsonAnime);
+
+        // Read JSON objects using JsonNode after readTree()
         ObjectMapper objectMapper = new ObjectMapper();
-        MYMODEL myData = objectMapper.readValue(JSONstring, MYMODEL.class);
-        System.out.println("OBJECT: " + myData);
+        JsonNode jsonNode = objectMapper.readTree(jsonAnime);
+        // By reading the JSON tree, the code can now get individual "key":"value" pairs
+        // The value of the "result" key is an ARRAY of JSON objects
+        JsonNode arrayOfAnime = jsonNode.get("data");
+        String unfiltheredDuration = arrayOfAnime.get("duration").asText();
+        String[] splitedDurations = unfiltheredDuration.split(" ");
+        int totalDuration = 0;
+        for (String string : splitedDurations) {
+            if (string.equals("hr")) {
+                //totalDuration working on adding the hours and minutes together to get the total duration
+            }
+        }
+        System.out.println(splitedDurations.toString());
     }
 
 }

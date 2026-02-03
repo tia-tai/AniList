@@ -2,25 +2,218 @@ package com.example.anilist;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 public class Anime {
-    String url;
-    String title;
-    String titleJP;
-    String imageUrl;
-    String type;
-    int episodes;
-    boolean finishedAiring;
-    LocalDate airDate;
-    int durationMinutes;
-    String rating;
-    int popularity;
-    int season;
-    String genre;
+    private String url;
+    private String title;
+    private String titleJP;
+    private String imageUrl;
+    private String type;
+    private int episodes;
+    private boolean finishedAiring;
+    private LocalDate airDate;
+    private int durationMinutes;
+    private int rating;
+    private int popularity;
+    private int season;
+    private String genre;
 
-//    {
+    static public ArrayList<Anime> animeList = new ArrayList<>();
+
+    public Anime(String url, String title, String titleJP, String imageUrl, String type, int episodes, boolean finishedAiring, LocalDate airDate, int durationMinutes, int rating, int popularity, int season, String genre) {
+        this.url = url;
+        this.title = title;
+        this.titleJP = titleJP;
+        this.imageUrl = imageUrl;
+        this.type = type;
+        this.episodes = episodes;
+        this.finishedAiring = finishedAiring;
+        this.airDate = airDate;
+        this.durationMinutes = durationMinutes;
+        this.rating = rating;
+        this.popularity = popularity;
+        this.season = season;
+        this.genre = genre;
+    }
+
+    public Anime() {
+
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getTitleJP() {
+        return titleJP;
+    }
+
+    public void setTitleJP(String titleJP) {
+        this.titleJP = titleJP;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public int getEpisodes() {
+        return episodes;
+    }
+
+    public void setEpisodes(int episodes) {
+        this.episodes = episodes;
+    }
+
+    public boolean isFinishedAiring() {
+        return finishedAiring;
+    }
+
+    public void setFinishedAiring(boolean finishedAiring) {
+        this.finishedAiring = finishedAiring;
+    }
+
+    public LocalDate getAirDate() {
+        return airDate;
+    }
+
+    public void setAirDate(LocalDate airDate) {
+        this.airDate = airDate;
+    }
+
+    public int getDurationMinutes() {
+        return durationMinutes;
+    }
+
+    public void setDurationMinutes(int durationMinutes) {
+        this.durationMinutes = durationMinutes;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
+    public int getPopularity() {
+        return popularity;
+    }
+
+    public void setPopularity(int popularity) {
+        this.popularity = popularity;
+    }
+
+    public int getSeason() {
+        return season;
+    }
+
+    public void setSeason(int season) {
+        this.season = season;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    public static ArrayList<Anime> getAnimeList() {
+        return animeList;
+    }
+
+    public static void setAnimeList(ArrayList<Anime> animeList) {
+        Anime.animeList = animeList;
+    }
+
+    static String getJSONfromURL(String urlString) throws Exception {
+        URL url = new URL(urlString);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("Accept", "application/json");
+        InputStreamReader inStream = new InputStreamReader(connection.getInputStream());
+        BufferedReader reader = new BufferedReader(inStream);
+        StringBuilder response = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            response.append(line);
+        }
+        reader.close();
+        return response.toString();
+    }
+
+
+    public void searchAnime() throws Exception {
+        String jsonAnime=getJSONfromURL("https://api.jikan.moe/v4/random/anime");
+        System.out.println("JSONs: " + jsonAnime);
+
+        // Read JSON objects using JsonNode after readTree()
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(jsonAnime);
+        // By reading the JSON tree, the code can now get individual "key":"value" pairs
+        // The value of the "result" key is an ARRAY of JSON objects
+        JsonNode arrayOfAnime = jsonNode.get("data");
+        // read 1 JSON object (its "key":"value" pairs) into the fields of a Anime object.
+        Anime newAnime = new Anime();
+        newAnime.setUrl(arrayOfAnime.get("url").asText());
+        newAnime.setImageUrl(arrayOfAnime.get("images").get("jpg").get("image_url").asText());
+        newAnime.setTitle(arrayOfAnime.get("title").asText());
+        newAnime.setTitleJP(arrayOfAnime.get("title_japanese").asText());
+        newAnime.setType(arrayOfAnime.get("type").asText());
+        newAnime.setEpisodes(arrayOfAnime.get("episodes").asInt());
+        newAnime.setFinishedAiring(arrayOfAnime.get("status").asText().equals("Finished Airing"));
+        String dateTimeString = arrayOfAnime.get("aired").get("from").asText();
+        OffsetDateTime offsetDateTime = OffsetDateTime.parse(dateTimeString, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        LocalDate localDate = offsetDateTime.toLocalDate();
+        newAnime.setAirDate(localDate);
+        //newAnime.setDurationMinutes(); // Parse HR Minute into Minutes
+        newAnime.setRating(arrayOfAnime.get("rank").asInt());
+        newAnime.setPopularity(arrayOfAnime.get("popularity").asInt());
+        newAnime.setSeason(arrayOfAnime.get("season").asInt());
+        newAnime.setGenre(arrayOfAnime.get("genres").get("name").asText());
+        animeList.add(newAnime);
+        System.out.println("OBJECT: " + newAnime);
+    }
+
+
+    //    {
 //        "data": {
 //        "mal_id": 23865,
 //                "url": "https://myanimelist.net/anime/23865/Ojisan_Kaizou_Kouza",
