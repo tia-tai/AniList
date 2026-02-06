@@ -1,18 +1,10 @@
 package com.example.anilist;
 
-import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicReference;
 
-import com.fasterxml.jackson.core.*;
-import com.fasterxml.jackson.databind.*;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -39,19 +31,16 @@ public class HelloController {
     public Label AnimeName;
 
     public void initialize() throws Exception {
-        for (int i = 0; i < 10; i++) {
-            Anime.searchAnime();
-        }
+        Anime.searchAnime();
 
         for (Anime anime : Anime.getAnimeList()) {
             animeData.getItems().add(anime);
-            wait(1000);
         }
 
-        String imageUrl = Anime.getAnimeList().getFirst().getImageUrl();
+        AtomicReference<String> imageUrl = new AtomicReference<>(Anime.getAnimeList().getFirst().getImageUrl());
         String name = Anime.getAnimeList().getFirst().getTitle();
-        Image image = new Image(imageUrl, true);
-        AnimeCover.setImage(image);
+        AtomicReference<Image> image = new AtomicReference<>(new Image(imageUrl.get(), true));
+        AnimeCover.setImage(image.get());
         AnimeName.setText(name);
         animeData.getSelectionModel().select(Anime.getAnimeList().getFirst());
 
@@ -67,6 +56,15 @@ public class HelloController {
         popularityColumn.setCellValueFactory(new PropertyValueFactory<>("popularity"));
         seasonColumn.setCellValueFactory(new PropertyValueFactory<>("season"));
         genreColumn.setCellValueFactory(new PropertyValueFactory<>("genre"));
+
+        animeData.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    AnimeName.setText(newValue.getTitle());
+                    imageUrl.set(newValue.getImageUrl());
+                    image.set(new Image(imageUrl.get(), true));
+                    AnimeCover.setImage(image.get());
+                }
+        );
     }
 
 }
