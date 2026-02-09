@@ -3,6 +3,7 @@ module com.example.anilist {
     requires javafx.fxml;
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
+    requires javafx.base;
 
 
     opens com.example.anilist to javafx.fxml;

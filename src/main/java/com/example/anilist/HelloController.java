@@ -1,5 +1,7 @@
 package com.example.anilist;
 
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
 import java.time.LocalDate;
@@ -10,6 +12,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 
 public class HelloController {
     public TableView<Anime> animeData;
@@ -30,6 +35,10 @@ public class HelloController {
     public ImageView AnimeCover;
     public Label AnimeName;
 
+    public VBox studioList;
+
+    public AnchorPane studioPane;
+
     public void initialize() throws Exception {
         Anime.searchAnime();
 
@@ -42,6 +51,14 @@ public class HelloController {
         AtomicReference<Image> image = new AtomicReference<>(new Image(imageUrl.get(), true));
         AnimeCover.setImage(image.get());
         AnimeName.setText(name);
+        studioList.getChildren().clear();
+        Text studioText = new Text("Studio: ");
+        AtomicReference<Button> studioButton = new AtomicReference<>(new Button(Anime.getAnimeList().getFirst().getStudio().getStudioName()));
+        studioButton.get().setId(Anime.getAnimeList().getFirst().getStudio().getStudioName());
+//        studioButton.get().setOnAction();
+        studioList.getChildren().add(studioText);
+        studioList.getChildren().add(studioButton.get());
+
         animeData.getSelectionModel().select(Anime.getAnimeList().getFirst());
 
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
@@ -62,9 +79,19 @@ public class HelloController {
                     AnimeName.setText(newValue.getTitle());
                     imageUrl.set(newValue.getImageUrl());
                     image.set(new Image(imageUrl.get(), true));
+                    studioList.getChildren().clear();
+                    studioList.getChildren().add(new Text("Studio: "));
+                    studioButton.set(new Button(newValue.getStudio().getStudioName()));
+                    studioButton.get().setId(newValue.getStudio().getStudioName());
+                    studioList.getChildren().add(studioButton.get());
                     AnimeCover.setImage(image.get());
                 }
         );
     }
 
+    public void openStudio(ActionEvent event) {
+        Button sourceButton = (Button) event.getSource();
+        studioPane.setVisible(true);
+        studioPane.setDisable(false);
+    }
 }

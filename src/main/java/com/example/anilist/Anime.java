@@ -15,6 +15,7 @@ import java.util.Arrays;
 
 public class Anime {
     private String url;
+    private int id;
     private String title;
     private String titleJP;
     private String imageUrl;
@@ -27,12 +28,13 @@ public class Anime {
     private int popularity;
     private int season;
     private String genre;
-    private ArrayList<Integer> studioID = new ArrayList<>();
+    private Studio studio;
 
     static public ArrayList<Anime> animeList = new ArrayList<>();
 
-    public Anime(String url, String title, String titleJP, String imageUrl, String type, int episodes, boolean finishedAiring, LocalDate airDate, int durationMinutes, int rating, int popularity, int season, String genre, ArrayList<Integer> studioID) {
+    public Anime(String url, int id, String title, String titleJP, String imageUrl, String type, int episodes, boolean finishedAiring, LocalDate airDate, int durationMinutes, int rating, int popularity, int season, String genre, Studio studio) {
         this.url = url;
+        this.id = id;
         this.title = title;
         this.titleJP = titleJP;
         this.imageUrl = imageUrl;
@@ -45,7 +47,7 @@ public class Anime {
         this.popularity = popularity;
         this.season = season;
         this.genre = genre;
-        this.studioID = studioID;
+        this.studio = studio;
     }
 
     public Anime() {
@@ -58,6 +60,14 @@ public class Anime {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -164,12 +174,12 @@ public class Anime {
         Anime.animeList = animeList;
     }
 
-    public ArrayList<Integer> getStudioID() {
-        return studioID;
+    public Studio getStudio() {
+        return studio;
     }
 
-    public void setStudioID(ArrayList<Integer> studioID) {
-        this.studioID = studioID;
+    public void setStudio(Studio studio) {
+        this.studio = studio;
     }
 
     static String getJSONfromURL(String urlString) throws Exception {
@@ -205,6 +215,7 @@ public class Anime {
             if (listNumber < 100) {
                 Anime newAnime = new Anime();
                 newAnime.setUrl(arrayOfAnime.get("url").asText());
+                newAnime.setId(arrayOfAnime.get("mal_id").asInt());
                 newAnime.setImageUrl(arrayOfAnime.get("images").get("jpg").get("image_url").asText());
                 newAnime.setTitle(arrayOfAnime.get("title").asText());
                 newAnime.setTitleJP(arrayOfAnime.get("title_japanese").asText());
@@ -240,11 +251,25 @@ public class Anime {
                     break;
                 }
                 JsonNode studioNode = objectMapper.readTree(arrayOfAnime.get("studios").traverse());
-                ArrayList<Integer> studoIDS = new ArrayList<>();
+                Studio foundStudio = null;
                 for (JsonNode node : studioNode) {
-                    studoIDS.add(node.get("mal_id").asInt());
+                    boolean found = false;
+                    for (Studio studio : Studio.getStudios()){
+                        if (studio.getStudioId() == node.get("mal_id").asInt()) {
+                            foundStudio = studio;
+                            studio.addProducedAnimes(newAnime);
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        Studio studio = new Studio(node.get("mal_id").asInt(), node.get("name").asText());
+                        studio.addProducedAnimes(newAnime);
+                        foundStudio = studio;
+                    }
                 }
-                newAnime.setStudioID(studoIDS);
+                newAnime.setStudio(foundStudio);
                 animeList.add(newAnime);
                 System.out.println("OBJECT: " + newAnime.getTitle());
                 listNumber++;
