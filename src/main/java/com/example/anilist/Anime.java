@@ -18,6 +18,7 @@ public class Anime {
     private int id;
     private String title;
     private String titleJP;
+    private String synopsis;
     private String imageUrl;
     private String type;
     private int episodes;
@@ -32,11 +33,12 @@ public class Anime {
 
     static public ArrayList<Anime> animeList = new ArrayList<>();
 
-    public Anime(String url, int id, String title, String titleJP, String imageUrl, String type, int episodes, boolean finishedAiring, LocalDate airDate, int durationMinutes, int rating, int popularity, int season, String genre, Studio studio) {
+    public Anime(String url, int id, String title, String titleJP, String synopsis, String imageUrl, String type, int episodes, boolean finishedAiring, LocalDate airDate, int durationMinutes, int rating, int popularity, int season, String genre, Studio studio) {
         this.url = url;
         this.id = id;
         this.title = title;
         this.titleJP = titleJP;
+        this.synopsis = synopsis;
         this.imageUrl = imageUrl;
         this.type = type;
         this.episodes = episodes;
@@ -182,6 +184,14 @@ public class Anime {
         this.studio = studio;
     }
 
+    public String getSynopsis() {
+        return synopsis;
+    }
+
+    public void setSynopsis(String synopsis) {
+        this.synopsis = synopsis;
+    }
+
     static String getJSONfromURL(String urlString) throws Exception {
         URL url = new URL(urlString);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -214,6 +224,7 @@ public class Anime {
         for (JsonNode arrayOfAnime : arrayOfAnimes) {
             if (listNumber < 100) {
                 Anime newAnime = new Anime();
+                newAnime.setSynopsis(arrayOfAnime.get("synopsis").asText());
                 newAnime.setUrl(arrayOfAnime.get("url").asText());
                 newAnime.setId(arrayOfAnime.get("mal_id").asInt());
                 newAnime.setImageUrl(arrayOfAnime.get("images").get("jpg").get("image_url").asText());
