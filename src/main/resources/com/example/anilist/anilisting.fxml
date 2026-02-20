@@ -17,7 +17,7 @@
    <children>
       <AnchorPane fx:id="homePane" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" layoutX="348.0" layoutY="122.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" layoutX="348.0" layoutY="122.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <content>
                   <GridPane fx:id="animeList" alignment="CENTER" prefHeight="400.0" prefWidth="388.0">
                     <columnConstraints>
@@ -26,7 +26,7 @@
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                     </columnConstraints>
                     <rowConstraints>
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="400.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                   </GridPane>
                </content>
@@ -45,78 +45,78 @@
       </AnchorPane>
       <AnchorPane fx:id="animePane" disable="true" prefHeight="200.0" prefWidth="200.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="28.0" layoutY="28.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0" />
-            <Label layoutX="44.0" layoutY="200.0" text="Anime Name" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="200.0">
+            <ImageView fx:id="animeCover" fitHeight="150.0" fitWidth="200.0" layoutX="28.0" layoutY="28.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0" />
+            <Label fx:id="animeTitle" layoutX="44.0" layoutY="200.0" text="Anime Name" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="200.0">
                <font>
                   <Font name="Comic Sans MS" size="15.0" />
                </font>
             </Label>
-            <Label alignment="TOP_LEFT" layoutX="21.0" layoutY="221.0" prefHeight="152.0" prefWidth="214.0" text="Anime Discription" wrapText="true" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="230.0">
+            <Label fx:id="animeDescription" alignment="TOP_LEFT" layoutX="21.0" layoutY="221.0" prefHeight="152.0" prefWidth="214.0" text="Anime Description" wrapText="true" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="230.0">
                <font>
                   <Font name="Comic Sans MS" size="13.0" />
                </font>
             </Label>
             <VBox layoutX="264.0" layoutY="18.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
                <children>
-                  <Label text="JP Title: ">
+                  <Label fx:id="jpTitle" text="JP Title: ">
                      <font>
                         <Font name="Comic Sans MS" size="15.0" />
                      </font>
                   </Label>
-                  <Label layoutX="10.0" layoutY="164.0" text="Genre:">
+                  <Label fx:id="genre" layoutX="10.0" layoutY="164.0" text="Genre:">
                      <font>
                         <Font name="Comic Sans MS" size="15.0" />
                      </font>
                   </Label>
-                  <Label layoutX="10.0" layoutY="10.0" text="Type:">
+                  <Label fx:id="type" layoutX="10.0" layoutY="10.0" text="Type:">
                      <font>
                         <Font name="Comic Sans MS" size="15.0" />
                      </font>
                   </Label>
-                  <Label layoutX="10.0" layoutY="32.0" text="Episodes">
+                  <Label fx:id="episodes" layoutX="10.0" layoutY="32.0" text="Episodes">
                      <font>
                         <Font name="Comic Sans MS" size="15.0" />
                      </font>
                   </Label>
-                  <Label layoutX="10.0" layoutY="54.0" text="Duration:">
+                  <Label fx:id="duration" layoutX="10.0" layoutY="54.0" text="Duration:">
                      <font>
                         <Font name="Comic Sans MS" size="15.0" />
                      </font>
                   </Label>
-                  <Label text="Season:">
+                  <Label fx:id="season" text="Season:">
                      <font>
                         <Font name="Comic Sans MS" size="15.0" />
                      </font>
                   </Label>
-                  <Label layoutX="10.0" layoutY="54.0" text="Finished Airing:">
+                  <Label fx:id="finishedAiring" layoutX="10.0" layoutY="54.0" text="Finished Airing:">
                      <font>
                         <Font name="Comic Sans MS" size="15.0" />
                      </font>
                   </Label>
-                  <Label layoutX="10.0" layoutY="76.0" text="Air Date:">
+                  <Label fx:id="airDate" layoutX="10.0" layoutY="76.0" text="Air Date:">
                      <font>
                         <Font name="Comic Sans MS" size="15.0" />
                      </font>
                   </Label>
-                  <Label layoutX="10.0" layoutY="120.0" text="Rating:">
+                  <Label fx:id="rating" layoutX="10.0" layoutY="120.0" text="Rating:">
                      <font>
                         <Font name="Comic Sans MS" size="15.0" />
                      </font>
                   </Label>
-                  <Label layoutX="10.0" layoutY="142.0" text="Popularity:">
+                  <Label fx:id="popularity" layoutX="10.0" layoutY="142.0" text="Popularity:">
                      <font>
                         <Font name="Comic Sans MS" size="15.0" />
                      </font>
                   </Label>
-                  <Label layoutX="10.0" layoutY="186.0" text="Studio:">
+                  <Label fx:id="studio" layoutX="10.0" layoutY="186.0" text="Studio:">
                      <font>
                         <Font name="Comic Sans MS" size="15.0" />
                      </font>
                   </Label>
                </children>
             </VBox>
-            <Button layoutX="473.0" layoutY="358.0" mnemonicParsing="false" text="Favorite" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="65.0" />
-            <Button mnemonicParsing="false" style="-fx-background-color: orange;" text="Exit" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0" />
+            <Button fx:id="favorite" layoutX="473.0" layoutY="358.0" mnemonicParsing="false" onAction="#setFavorite" text="Favorite" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="65.0" />
+            <Button mnemonicParsing="false" onAction="#exitAnimePane" style="-fx-background-color: orange;" text="Exit" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0" />
          </children>
       </AnchorPane>
       <AnchorPane fx:id="savePane" disable="true" prefHeight="200.0" prefWidth="200.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">

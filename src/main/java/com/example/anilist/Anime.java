@@ -30,10 +30,11 @@ public class Anime {
     private int season;
     private String genre;
     private Studio studio;
+    private boolean favorite = false;
 
     static public ArrayList<Anime> animeList = new ArrayList<>();
 
-    public Anime(String url, int id, String title, String titleJP, String synopsis, String imageUrl, String type, int episodes, boolean finishedAiring, LocalDate airDate, int durationMinutes, int rating, int popularity, int season, String genre, Studio studio) {
+    public Anime(String url, int id, String title, String titleJP, String synopsis, String imageUrl, String type, int episodes, boolean finishedAiring, LocalDate airDate, int durationMinutes, int rating, int popularity, int season, String genre, Studio studio, boolean favorite) {
         this.url = url;
         this.id = id;
         this.title = title;
@@ -50,10 +51,11 @@ public class Anime {
         this.season = season;
         this.genre = genre;
         this.studio = studio;
+        this.favorite = favorite;
+        animeList.add(this);
     }
 
     public Anime() {
-
     }
 
     public String getUrl() {
@@ -190,6 +192,14 @@ public class Anime {
 
     public void setSynopsis(String synopsis) {
         this.synopsis = synopsis;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
+    }
+
+    public boolean isFavorite() {
+        return favorite;
     }
 
     static String getJSONfromURL(String urlString) throws Exception {
