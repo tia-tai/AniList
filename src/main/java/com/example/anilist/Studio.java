@@ -5,23 +5,23 @@ import java.util.ArrayList;
 public class Studio {
     private int studioId;
     private String studioName;
-    private String discription;
+    private String description;
     private String imageURL;
     private ArrayList<Anime> producedAnimes = new ArrayList<>();
     static ArrayList<Studio> studios = new ArrayList<>();
 
-    public Studio(int studioId, String studioName, String discription, String imageURL, ArrayList<Anime> producedAnimes) {
+    public Studio(int studioId, String studioName, String description, String imageURL, ArrayList<Anime> producedAnimes) {
         this.studioId = studioId;
         this.studioName = studioName;
-        this.discription = discription;
+        this.description = description;
         this.imageURL = imageURL;
         this.producedAnimes = producedAnimes;
         studios.add(this);
     }
 
     public Studio(int malId, String name) {
-        this.studioId = studioId;
-        this.studioName = studioName;
+        this.studioId = malId;
+        this.studioName = name;
         studios.add(this);
     }
 
@@ -49,12 +49,12 @@ public class Studio {
         this.imageURL = imageURL;
     }
 
-    public String getDiscription() {
-        return discription;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDiscription(String discription) {
-        this.discription = discription;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getStudioName() {

@@ -55,7 +55,7 @@ public class HelloController {
         Text studioText = new Text("Studio: ");
         AtomicReference<Button> studioButton = new AtomicReference<>(new Button(Anime.getAnimeList().getFirst().getStudio().getStudioName()));
         studioButton.get().setId(Anime.getAnimeList().getFirst().getStudio().getStudioName());
-//        studioButton.get().setOnAction();
+        studioButton.get().setOnAction(this::openStudio);
         studioList.getChildren().add(studioText);
         studioList.getChildren().add(studioButton.get());
 
@@ -83,6 +83,7 @@ public class HelloController {
                     studioList.getChildren().add(new Text("Studio: "));
                     studioButton.set(new Button(newValue.getStudio().getStudioName()));
                     studioButton.get().setId(newValue.getStudio().getStudioName());
+                    studioButton.get().setOnAction(this::openStudio);
                     studioList.getChildren().add(studioButton.get());
                     AnimeCover.setImage(image.get());
                 }
@@ -90,8 +91,10 @@ public class HelloController {
     }
 
     public void openStudio(ActionEvent event) {
-        Button sourceButton = (Button) event.getSource();
+
+        // Show the studio pane
         studioPane.setVisible(true);
         studioPane.setDisable(false);
+        studioPane.toFront();
     }
 }
