@@ -33,6 +33,7 @@ public class Anime {
     private boolean favorite = false;
 
     static public ArrayList<Anime> animeList = new ArrayList<>();
+    static public int page = 1;
 
     public Anime(String url, int id, String title, String titleJP, String synopsis, String imageUrl, String type, int episodes, boolean finishedAiring, LocalDate airDate, int durationMinutes, int rating, int popularity, int season, String genre, Studio studio, boolean favorite) {
         this.url = url;
@@ -220,83 +221,86 @@ public class Anime {
 
 
     static void searchAnime() throws Exception {
-        String jsonAnime=getJSONfromURL("https://api.jikan.moe/v4/anime");
-        System.out.println("JSONs: " + jsonAnime);
+        for (int i = page; i <= page + 2; i++) {
+            String jsonAnime=getJSONfromURL("https://api.jikan.moe/v4/anime?page=" + i);
+            System.out.println("JSONs: " + jsonAnime);
 
-        // Read JSON objects using JsonNode after readTree()
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(jsonAnime);
-        // By reading the JSON tree, the code can now get individual "key":"value" pairs
-        // The value of the "result" key is an ARRAY of JSON objects
-        JsonNode arrayOfAnimes = jsonNode.get("data");
-        // read 1 JSON object (its "key":"value" pairs) into the fields of a Anime object.
-        int listNumber = 0;
-        for (JsonNode arrayOfAnime : arrayOfAnimes) {
-            if (listNumber < 100) {
-                Anime newAnime = new Anime();
-                newAnime.setSynopsis(arrayOfAnime.get("synopsis").asText());
-                newAnime.setUrl(arrayOfAnime.get("url").asText());
-                newAnime.setId(arrayOfAnime.get("mal_id").asInt());
-                newAnime.setImageUrl(arrayOfAnime.get("images").get("jpg").get("image_url").asText());
-                newAnime.setTitle(arrayOfAnime.get("title").asText());
-                newAnime.setTitleJP(arrayOfAnime.get("title_japanese").asText());
-                newAnime.setType(arrayOfAnime.get("type").asText());
-                newAnime.setEpisodes(arrayOfAnime.get("episodes").asInt());
-                newAnime.setFinishedAiring(arrayOfAnime.get("status").asText().equals("Finished Airing"));
-                String dateTimeString = arrayOfAnime.get("aired").get("from").asText();
-                System.out.println(dateTimeString);
-                if (dateTimeString != null){
-                    OffsetDateTime offsetDateTime = OffsetDateTime.parse(dateTimeString, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-                    LocalDate localDate = offsetDateTime.toLocalDate();
-                    newAnime.setAirDate(localDate);
-                }
-                String unfiltheredDuration = arrayOfAnime.get("duration").asText();
-                ArrayList<String> splitedDuration = new ArrayList<>();
-                int totalDuration = 0;
-                splitedDuration.addAll(Arrays.asList(unfiltheredDuration.split(" ")));
-                if (!splitedDuration.getFirst().equals("Unknown")) {
-                    if (splitedDuration.get(1).equals("hr")) {
-                        totalDuration += 60 * Integer.parseInt(splitedDuration.getFirst());
-                        totalDuration += Integer.parseInt(splitedDuration.getFirst());
-                    } else if (splitedDuration.get(1).equals("min")) {
-                        totalDuration += Integer.parseInt(splitedDuration.getFirst());
+            // Read JSON objects using JsonNode after readTree()
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(jsonAnime);
+            // By reading the JSON tree, the code can now get individual "key":"value" pairs
+            // The value of the "result" key is an ARRAY of JSON objects
+            JsonNode arrayOfAnimes = jsonNode.get("data");
+            // read 1 JSON object (its "key":"value" pairs) into the fields of a Anime object.
+            int listNumber = 0;
+            for (JsonNode arrayOfAnime : arrayOfAnimes) {
+                if (listNumber < 25) {
+                    Anime newAnime = new Anime();
+                    newAnime.setSynopsis(arrayOfAnime.get("synopsis").asText());
+                    newAnime.setUrl(arrayOfAnime.get("url").asText());
+                    newAnime.setId(arrayOfAnime.get("mal_id").asInt());
+                    newAnime.setImageUrl(arrayOfAnime.get("images").get("jpg").get("image_url").asText());
+                    newAnime.setTitle(arrayOfAnime.get("title").asText());
+                    newAnime.setTitleJP(arrayOfAnime.get("title_japanese").asText());
+                    newAnime.setType(arrayOfAnime.get("type").asText());
+                    newAnime.setEpisodes(arrayOfAnime.get("episodes").asInt());
+                    newAnime.setFinishedAiring(arrayOfAnime.get("status").asText().equals("Finished Airing"));
+                    String dateTimeString = arrayOfAnime.get("aired").get("from").asText();
+                    System.out.println(dateTimeString);
+                    if (dateTimeString != null){
+                        OffsetDateTime offsetDateTime = OffsetDateTime.parse(dateTimeString, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+                        LocalDate localDate = offsetDateTime.toLocalDate();
+                        newAnime.setAirDate(localDate);
                     }
-                }
-                newAnime.setDurationMinutes(totalDuration);
-                newAnime.setRating(arrayOfAnime.get("rank").asInt());
-                newAnime.setPopularity(arrayOfAnime.get("popularity").asInt());
-                newAnime.setSeason(arrayOfAnime.get("season").asInt());
-                JsonNode genreNode = objectMapper.readTree(arrayOfAnime.get("genres").traverse());
-                for (JsonNode node : genreNode) {
-                    newAnime.setGenre(node.get("name").asText());
-                    break;
-                }
-                JsonNode studioNode = objectMapper.readTree(arrayOfAnime.get("studios").traverse());
-                Studio foundStudio = null;
-                for (JsonNode node : studioNode) {
-                    boolean found = false;
-                    for (Studio studio : Studio.getStudios()){
-                        if (studio.getStudioId() == node.get("mal_id").asInt()) {
-                            foundStudio = studio;
-                            studio.addProducedAnimes(newAnime);
-                            found = true;
-                            break;
+                    String unfiltheredDuration = arrayOfAnime.get("duration").asText();
+                    ArrayList<String> splitedDuration = new ArrayList<>();
+                    int totalDuration = 0;
+                    splitedDuration.addAll(Arrays.asList(unfiltheredDuration.split(" ")));
+                    if (!splitedDuration.getFirst().equals("Unknown")) {
+                        if (splitedDuration.get(1).equals("hr")) {
+                            totalDuration += 60 * Integer.parseInt(splitedDuration.getFirst());
+                            totalDuration += Integer.parseInt(splitedDuration.getFirst());
+                        } else if (splitedDuration.get(1).equals("min")) {
+                            totalDuration += Integer.parseInt(splitedDuration.getFirst());
                         }
                     }
-
-                    if (!found) {
-                        Studio studio = new Studio(node.get("mal_id").asInt(), node.get("name").asText());
-                        studio.addProducedAnimes(newAnime);
-                        foundStudio = studio;
+                    newAnime.setDurationMinutes(totalDuration);
+                    newAnime.setRating(arrayOfAnime.get("rank").asInt());
+                    newAnime.setPopularity(arrayOfAnime.get("popularity").asInt());
+                    newAnime.setSeason(arrayOfAnime.get("season").asInt());
+                    JsonNode genreNode = objectMapper.readTree(arrayOfAnime.get("genres").traverse());
+                    for (JsonNode node : genreNode) {
+                        newAnime.setGenre(node.get("name").asText());
+                        break;
                     }
+                    JsonNode studioNode = objectMapper.readTree(arrayOfAnime.get("studios").traverse());
+                    Studio foundStudio = null;
+                    for (JsonNode node : studioNode) {
+                        boolean found = false;
+                        for (Studio studio : Studio.getStudios()){
+                            if (studio.getStudioId() == node.get("mal_id").asInt()) {
+                                foundStudio = studio;
+                                studio.addProducedAnimes(newAnime);
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (!found) {
+                            Studio studio = new Studio(node.get("mal_id").asInt(), node.get("name").asText());
+                            studio.addProducedAnimes(newAnime);
+                            foundStudio = studio;
+                        }
+                    }
+                    newAnime.setStudio(foundStudio);
+                    animeList.add(newAnime);
+                    System.out.println("OBJECT: " + newAnime.getTitle());
+                    listNumber++;
+                } else {
+                    break;
                 }
-                newAnime.setStudio(foundStudio);
-                animeList.add(newAnime);
-                System.out.println("OBJECT: " + newAnime.getTitle());
-                listNumber++;
-            } else {
-                break;
             }
         }
+        page = page + 3;
     }
 }

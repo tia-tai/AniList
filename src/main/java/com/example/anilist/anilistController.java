@@ -11,6 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 
 import static com.example.anilist.Anime.getJSONfromURL;
 
@@ -20,6 +21,7 @@ public class anilistController {
     public AnchorPane homePane;
     public AnchorPane animePane;
     public AnchorPane studioPane;
+    public AnchorPane savePane;
 
     public ImageView animeCover;
     public Label animeTitle;
@@ -42,9 +44,38 @@ public class anilistController {
     public GridPane studioProductions;
     public ImageView studioImage;
 
+    public HBox savedList;
+
     public void initialize() throws Exception {
         Anime.searchAnime();
 
+        int column = 0;
+        int row = 0;
+
+        for (Anime anime : Anime.getAnimeList()) {
+            Image animeImage = new Image(anime.getImageUrl());
+            ImageView animeCover = new ImageView(animeImage);
+            animeCover.setPreserveRatio(true);
+            animeCover.setX(80);
+
+            Button animeButton = new Button(anime.getTitle());
+            animeButton.setGraphic(animeCover);
+            animeButton.setContentDisplay(ContentDisplay.TOP);
+            animeButton.setId(anime.getTitle());
+            animeButton.setOnAction(this::searchAnime);
+
+            animeList.add(animeButton, column, row); // Column 1, Row 1
+            if (column == 2) {
+                column = 0;
+                row++;
+            } else {
+                column++;
+            }
+        }
+    }
+
+    public void loadAnime() throws Exception {
+        Anime.searchAnime();
         int column = 0;
         int row = 0;
 
@@ -107,6 +138,8 @@ public class anilistController {
         homePane.setVisible(false);
         studioPane.setDisable(true);
         studioPane.setVisible(false);
+        savePane.setDisable(true);
+        savePane.setVisible(false);
         animePane.setDisable(false);
         animePane.setVisible(true);
     }
@@ -129,7 +162,8 @@ public class anilistController {
         }
     }
 
-    public void exitAnimePane() {
+    public void exitAnimePane() throws Exception {
+        loadAnime();
         homePane.setDisable(false);
         homePane.setVisible(true);
         animePane.setDisable(true);
@@ -170,6 +204,8 @@ public class anilistController {
         int column = 0;
         int row = 0;
 
+        studioProductions.getChildren().clear();
+
         for (Anime anime : currentStudio.getProducedAnimes()) {
             Image animeImage = new Image(anime.getImageUrl());
             ImageView animeCover = new ImageView(animeImage);
@@ -199,10 +235,44 @@ public class anilistController {
         studioPane.setVisible(true);
     }
 
-    public void exitStudioPane() {
+    public void exitStudioPane() throws Exception {
+        loadAnime();
         homePane.setDisable(false);
         homePane.setVisible(true);
         studioPane.setDisable(true);
         studioPane.setVisible(false);
+    }
+
+    public void getFavorite() {
+        savedList.getChildren().clear();
+        for (Anime anime : Anime.getAnimeList()) {
+            if (anime.isFavorite()) {
+                Image animeImage = new Image(anime.getImageUrl());
+                ImageView animeCover = new ImageView(animeImage);
+                animeCover.setPreserveRatio(true);
+                animeCover.setX(80);
+
+                Button animeButton = new Button(anime.getTitle());
+                animeButton.setGraphic(animeCover);
+                animeButton.setContentDisplay(ContentDisplay.TOP);
+                animeButton.setId(anime.getTitle());
+                animeButton.setOnAction(this::searchAnime);
+                savedList.getChildren().add(animeButton);
+            }
+        }
+        homePane.setDisable(true);
+        homePane.setVisible(false);
+        animePane.setDisable(true);
+        animePane.setVisible(false);
+        savePane.setDisable(false);
+        savePane.setVisible(true);
+    }
+
+    public void exitSave() throws Exception {
+        loadAnime();
+        homePane.setDisable(false);
+        homePane.setVisible(true);
+        savePane.setDisable(true);
+        savePane.setVisible(false);
     }
 }
