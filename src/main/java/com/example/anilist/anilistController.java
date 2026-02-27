@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -12,6 +13,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
 
 import static com.example.anilist.Anime.getJSONfromURL;
 
@@ -22,6 +24,8 @@ public class anilistController {
     public AnchorPane animePane;
     public AnchorPane studioPane;
     public AnchorPane savePane;
+
+    public ChoiceBox<String> filter;
 
     public ImageView animeCover;
     public Label animeTitle;
@@ -46,12 +50,12 @@ public class anilistController {
 
     public HBox savedList;
 
+    private int mainColumn = 0;
+    private int mainRow = 0;
+
     public void initialize() throws Exception {
         Anime.searchAnime();
 
-        int column = 0;
-        int row = 0;
-
         for (Anime anime : Anime.getAnimeList()) {
             Image animeImage = new Image(anime.getImageUrl());
             ImageView animeCover = new ImageView(animeImage);
@@ -64,22 +68,36 @@ public class anilistController {
             animeButton.setId(anime.getTitle());
             animeButton.setOnAction(this::searchAnime);
 
-            animeList.add(animeButton, column, row); // Column 1, Row 1
-            if (column == 2) {
-                column = 0;
-                row++;
+            animeList.add(animeButton, mainColumn, mainRow); // Column 1, Row 1
+            if (mainColumn == 2) {
+                mainColumn = 0;
+                mainRow++;
             } else {
-                column++;
+                mainColumn++;
             }
         }
+
+        filter.getItems().add("Title A-Z");
+        filter.getItems().add("Title Z-A");
+        filter.getItems().add("Year Ascending");
+        filter.getItems().add("Year Descending");
+        filter.getItems().add("Popularity Ascending");
+        filter.getItems().add("Popularity Descending");
+        filter.getItems().add("Movie");
+        filter.getItems().add("Anime Series");
     }
 
     public void loadAnime() throws Exception {
+        int currentItem = 0;
+        if (filter.getValue().equals(null)) {
+            currentItem = (mainRow * 3) + mainColumn;
+        } else {
+            mainRow = 0;
+            mainColumn = 0;
+        }
         Anime.searchAnime();
-        int column = 0;
-        int row = 0;
 
-        for (Anime anime : Anime.getAnimeList()) {
+        for (Anime anime : Anime.getAnimeList().subList(currentItem, Anime.getAnimeList().size())) {
             Image animeImage = new Image(anime.getImageUrl());
             ImageView animeCover = new ImageView(animeImage);
             animeCover.setPreserveRatio(true);
@@ -91,14 +109,15 @@ public class anilistController {
             animeButton.setId(anime.getTitle());
             animeButton.setOnAction(this::searchAnime);
 
-            animeList.add(animeButton, column, row); // Column 1, Row 1
-            if (column == 2) {
-                column = 0;
-                row++;
+            animeList.add(animeButton, mainColumn, mainRow); // Column 1, Row 1
+            if (mainColumn == 2) {
+                mainColumn = 0;
+                mainRow++;
             } else {
-                column++;
+                mainColumn++;
             }
         }
+        filter.setValue(null);
     }
 
     public void searchAnime(ActionEvent event) {
@@ -163,7 +182,6 @@ public class anilistController {
     }
 
     public void exitAnimePane() throws Exception {
-        loadAnime();
         homePane.setDisable(false);
         homePane.setVisible(true);
         animePane.setDisable(true);
@@ -236,7 +254,6 @@ public class anilistController {
     }
 
     public void exitStudioPane() throws Exception {
-        loadAnime();
         homePane.setDisable(false);
         homePane.setVisible(true);
         studioPane.setDisable(true);
@@ -269,10 +286,102 @@ public class anilistController {
     }
 
     public void exitSave() throws Exception {
-        loadAnime();
         homePane.setDisable(false);
         homePane.setVisible(true);
         savePane.setDisable(true);
         savePane.setVisible(false);
+    }
+
+    public void filterList() {
+        String choice = filter.getValue();
+        mainColumn = 0;
+        mainRow = 0;
+        animeList.getChildren().clear();
+        if (choice.equals("Title A-Z")) {
+
+        } else if (choice.equals("Title Z-A")) {
+
+        } else if (choice.equals("Year Ascending")) {
+
+        } else if (choice.equals("Year Descending")) {
+
+        } else if (choice.equals("Popularity Ascending")) {
+
+        } else if (choice.equals("Popularity Descending")) {
+
+        } else if (choice.equals("Movie")) {
+            for (Anime anime : Anime.getAnimeList()) {
+                if (anime.getType().equals("Movie")) {
+                    Image animeImage = new Image(anime.getImageUrl());
+                    ImageView animeCover = new ImageView(animeImage);
+                    animeCover.setPreserveRatio(true);
+                    animeCover.setX(80);
+
+                    Button animeButton = new Button(anime.getTitle());
+                    animeButton.setGraphic(animeCover);
+                    animeButton.setContentDisplay(ContentDisplay.TOP);
+                    animeButton.setId(anime.getTitle());
+                    animeButton.setOnAction(this::searchAnime);
+
+                    animeList.add(animeButton, mainColumn, mainRow); // Column 1, Row 1
+                    if (mainColumn == 2) {
+                        mainColumn = 0;
+                        mainRow++;
+                    } else {
+                        mainColumn++;
+                    }
+                }
+            }
+        } else if (choice.equals("Anime Series")) {
+            for (Anime anime : Anime.getAnimeList()) {
+                if (anime.getType().equals("TV")) {
+                    Image animeImage = new Image(anime.getImageUrl());
+                    ImageView animeCover = new ImageView(animeImage);
+                    animeCover.setPreserveRatio(true);
+                    animeCover.setX(80);
+
+                    Button animeButton = new Button(anime.getTitle());
+                    animeButton.setGraphic(animeCover);
+                    animeButton.setContentDisplay(ContentDisplay.TOP);
+                    animeButton.setId(anime.getTitle());
+                    animeButton.setOnAction(this::searchAnime);
+
+                    animeList.add(animeButton, mainColumn, mainRow); // Column 1, Row 1
+                    if (mainColumn == 2) {
+                        mainColumn = 0;
+                        mainRow++;
+                    } else {
+                        mainColumn++;
+                    }
+                }
+            }
+        }
+    }
+
+    public void reset() {
+        mainColumn = 0;
+        mainRow = 0;
+        animeList.getChildren().clear();
+        for (Anime anime : Anime.getAnimeList()) {
+            Image animeImage = new Image(anime.getImageUrl());
+            ImageView animeCover = new ImageView(animeImage);
+            animeCover.setPreserveRatio(true);
+            animeCover.setX(80);
+
+            Button animeButton = new Button(anime.getTitle());
+            animeButton.setGraphic(animeCover);
+            animeButton.setContentDisplay(ContentDisplay.TOP);
+            animeButton.setId(anime.getTitle());
+            animeButton.setOnAction(this::searchAnime);
+
+            animeList.add(animeButton, mainColumn, mainRow); // Column 1, Row 1
+            if (mainColumn == 2) {
+                mainColumn = 0;
+                mainRow++;
+            } else {
+                mainColumn++;
+            }
+        }
+        filter.setValue(null);
     }
 }

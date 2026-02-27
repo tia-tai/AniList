@@ -221,8 +221,8 @@ public class Anime {
 
 
     static void searchAnime() throws Exception {
-        for (int i = page; i <= page + 2; i++) {
-            String jsonAnime=getJSONfromURL("https://api.jikan.moe/v4/anime?page=" + i);
+        if (page < 25) {
+            String jsonAnime = getJSONfromURL("https://api.jikan.moe/v4/anime?page=" + page);
             System.out.println("JSONs: " + jsonAnime);
 
             // Read JSON objects using JsonNode after readTree()
@@ -247,7 +247,7 @@ public class Anime {
                     newAnime.setFinishedAiring(arrayOfAnime.get("status").asText().equals("Finished Airing"));
                     String dateTimeString = arrayOfAnime.get("aired").get("from").asText();
                     System.out.println(dateTimeString);
-                    if (dateTimeString != null){
+                    if (dateTimeString != null) {
                         OffsetDateTime offsetDateTime = OffsetDateTime.parse(dateTimeString, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
                         LocalDate localDate = offsetDateTime.toLocalDate();
                         newAnime.setAirDate(localDate);
@@ -277,7 +277,7 @@ public class Anime {
                     Studio foundStudio = null;
                     for (JsonNode node : studioNode) {
                         boolean found = false;
-                        for (Studio studio : Studio.getStudios()){
+                        for (Studio studio : Studio.getStudios()) {
                             if (studio.getStudioId() == node.get("mal_id").asInt()) {
                                 foundStudio = studio;
                                 studio.addProducedAnimes(newAnime);
@@ -300,7 +300,7 @@ public class Anime {
                     break;
                 }
             }
+            page++;
         }
-        page = page + 3;
     }
 }
