@@ -15,9 +15,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
 
 import static com.example.anilist.Anime.getJSONfromURL;
 
@@ -60,6 +58,8 @@ public class anilistController {
 
     private int mainColumn = 0;
     private int mainRow = 0;
+
+//    private ArrayList<String> navigation = new ArrayList<>();
 
     public void initialize() throws Exception {
         Anime.searchAnime();
@@ -132,6 +132,7 @@ public class anilistController {
         Button animeButton = (Button) event.getSource();
         String animeName = animeButton.getId();
         Anime currentAnime = null;
+        //navigation.add("Anime: " + currentAnime);
         for (Anime anime : Anime.getAnimeList()) {
             if (anime.getTitle().equals(animeName)) {
                 currentAnime = anime;
@@ -197,7 +198,8 @@ public class anilistController {
     }
 
     public void searchStudio() throws Exception {
-        String studioname = studio.getText().replace("Studio: ", "");
+        String studioname = studio.getText().replace("Studio:", "");
+        //navigation.add("Studio:" + studioname);
         Studio currentStudio = null;
 
         for (Studio studio : Studio.getStudios()) {
@@ -269,6 +271,7 @@ public class anilistController {
 
     public void getFavorite() {
         savedList.getChildren().clear();
+        //navigation.add("Favorite");
         for (Anime anime : Anime.getAnimeList()) {
             if (anime.isFavorite()) {
                 Image animeImage = new Image(anime.getImageUrl());
@@ -515,6 +518,7 @@ public class anilistController {
 
     public void searchGenre() throws Exception {
         String genrename = genre.getText().replace("Genre: ", "");
+        //navigation.add("Genre:" + genrename);
 
         genreLabel.setText("Genre: " + genrename);
 
@@ -560,4 +564,63 @@ public class anilistController {
         genrePane.setDisable(true);
         genrePane.setVisible(false);
     }
+
+//    public void prev() throws Exception {
+//        ArrayList<String> navigationSplit = new ArrayList<>(List.of(navigation.get(-2).split(":")));
+//        String prefix = navigationSplit.getFirst();
+//        String suffix = navigationSplit.getLast();
+//        System.out.println(prefix + " " + suffix);
+//
+//        if (prefix.equals("Anime")) {
+//            String animeName = suffix;
+//            Anime currentAnime = null;
+//            navigation.add("Anime: " + currentAnime);
+//            for (Anime anime : Anime.getAnimeList()) {
+//                if (anime.getTitle().equals(animeName)) {
+//                    currentAnime = anime;
+//                }
+//            }
+//
+//            Image animeImage = new Image(currentAnime.getImageUrl());
+//            animeCover.setImage(animeImage);
+//            animeTitle.setText(currentAnime.getTitle());
+//            animeDescription.setText(currentAnime.getSynopsis());
+//            jpTitle.setText("JP Title: " + currentAnime.getTitleJP());
+//            genre.setText("Genre: " + currentAnime.getGenre());;
+//            type.setText("Type: " + currentAnime.getType());;
+//            episodes.setText("Episodes: " + currentAnime.getEpisodes());
+//            duration.setText("Duration: " + currentAnime.getDurationMinutes() + " Minutes");
+//            season.setText("Season: " + currentAnime.getSeason());
+//            finishedAiring.setText("Finished Airing: " + currentAnime.isFinishedAiring());
+//            airDate.setText("Air Date: " + currentAnime.getAirDate());
+//            rating.setText("Rating: " + currentAnime.getRating());
+//            popularity.setText("Popularity: " + currentAnime.getPopularity());
+//            studio.setText("Studio: " + currentAnime.getStudio().getStudioName());
+//            studio.setId(currentAnime.getStudio().getStudioName());
+//
+//            if (currentAnime.isFavorite()){
+//                favorite.setStyle("-fx-background-color: #C4B454; ");
+//            } else {
+//                favorite.setStyle("-fx-background-color: #FDFDFD; ");
+//            }
+//
+//            homePane.setDisable(true);
+//            homePane.setVisible(false);
+//            studioPane.setDisable(true);
+//            studioPane.setVisible(false);
+//            savePane.setDisable(true);
+//            savePane.setVisible(false);
+//            animePane.setDisable(false);
+//            animePane.setVisible(true);
+//        } else if (prefix.equals("Studio")) {
+//            studio.setText("Studio: " + suffix);
+//            searchStudio();
+//        }  else if (prefix.equals("Genre")) {
+//            genre.setText("Genre: " + suffix);
+//            searchGenre();
+//        } else {
+//            getFavorite();
+//        }
+//        navigation.remove(navigation.getLast());
+//    }
 }
