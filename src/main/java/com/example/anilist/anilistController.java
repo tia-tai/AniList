@@ -198,7 +198,7 @@ public class anilistController {
     }
 
     public void searchStudio() throws Exception {
-        String studioname = studio.getText().replace("Studio:", "");
+        String studioname = studio.getText().replace("Studio: ", "");
         //navigation.add("Studio:" + studioname);
         Studio currentStudio = null;
 
